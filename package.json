@@ -1,0 +1,23 @@
+{
+  "name": "nats-perf",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stambata/nats-perf.git"
+  },
+  "keywords": [],
+  "author": "Stamen Peev",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/stambata/nats-perf/issues"
+  },
+  "dependencies": {
+    "nats": "^0.7.24"
+  },
+  "homepage": "https://github.com/stambata/nats-perf#readme"
+}
