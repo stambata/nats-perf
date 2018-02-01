@@ -1,4 +1,5 @@
 /* eslint no-process-exit:0 no-process-env:0 */
+console.log('please wait...');
 const fork = require('child_process').fork;
 const path = require('path');
 const nodePaths = {
