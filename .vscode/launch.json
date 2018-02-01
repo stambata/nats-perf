@@ -8,19 +8,19 @@
             "type": "node",
             "request": "launch",
             "name": "pubSub 1000000 1",
-            "env": {"test": "pubSub", "iterations": 1000000, "consumers": 1},
+            "env": {"test": "pubSub", "iterations": 1000000, "producers": 1},
             "program": "${workspaceFolder}\\index.js"
         },{
             "type": "node",
             "request": "launch",
             "name": "reqRes 50000 1",
-            "env": {"test": "reqRes", "iterations": 50000, "consumers": 1},
+            "env": {"test": "reqRes", "iterations": 50000, "producers": 1},
             "program": "${workspaceFolder}\\index.js"
         },{
             "type": "node",
             "request": "launch",
-            "name": "reqResQueue 50000 1",
-            "env": {"test": "reqResQueue", "iterations": 50000, "consumers": 2},
+            "name": "reqResQueue 50000 2",
+            "env": {"test": "reqResQueue", "iterations": 50000, "producers": 2},
             "program": "${workspaceFolder}\\index.js"
         }
     ]

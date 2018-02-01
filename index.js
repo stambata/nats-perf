@@ -25,33 +25,33 @@ const tests = {
 };
 const params = Object.assign({
     iterations: 1000,
-    consumers: 1,
+    producers: 1,
     test: 'pubsub'
 }, {
     iterations: parseInt(process.env.iterations) || undefined,
-    consumers: parseInt(process.env.consumers) || undefined,
+    producers: parseInt(process.env.producers) || undefined,
     test: process.env.test
 });
 const {client, server} = tests[params.test];
-let consumersStarted = 0;
-let consumers = [];
-for (var i = 0; i < params.consumers; i += 1) {
-    let consumer = fork(server, [], {env: {iterations: params.iterations, id: i + 1}});
-    consumers.push(consumer);
-    consumer
+let producersStarted = 0;
+let producers = [];
+for (var i = 0; i < params.producers; i += 1) {
+    let producer = fork(server, [], {env: {iterations: params.iterations, id: i + 1}});
+    producers.push(producer);
+    producer
         .on('message', message => {
             if (message === 'ready') {
-                consumersStarted++;
-                if (consumersStarted === params.consumers) {
+                producersStarted++;
+                if (producersStarted === params.producers) {
                     fork(client, [], {env: {iterations: params.iterations}})
                         .on('message', message => {
                             if (message === 'done') {
-                                consumers.map(consumer => consumer.send('done'));
+                                producers.map(producer => producer.send('done'));
                             }
                         });
                 }
             } else if (message === 'done') {
-                if (!--consumersStarted) {
+                if (!--producersStarted) {
                     process.exit(0);
                 }
             }
