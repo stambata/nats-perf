@@ -19,8 +19,20 @@
         },{
             "type": "node",
             "request": "launch",
+            "name": "customReqRes 50000 1",
+            "env": {"test": "customReqRes", "iterations": 50000, "producers": 1},
+            "program": "${workspaceFolder}\\index.js"
+        },{
+            "type": "node",
+            "request": "launch",
             "name": "reqResQueue 50000 2",
             "env": {"test": "reqResQueue", "iterations": 50000, "producers": 2},
+            "program": "${workspaceFolder}\\index.js"
+        },{
+            "type": "node",
+            "request": "launch",
+            "name": "customReqResQueue 50000 2",
+            "env": {"test": "customReqResQueue", "iterations": 50000, "producers": 2},
             "program": "${workspaceFolder}\\index.js"
         }
     ]

@@ -1,6 +1,7 @@
 /* eslint no-process-env:0 no-console:0 */
 const nats = require('nats').connect();
 const replyMessage = 'done!';
+const topic = process.env.topic;
 let received = 0;
 let time;
 const summarize = () => {
@@ -21,7 +22,7 @@ process.on('message', (message) => {
 });
 
 nats.on('connect', function(nc) {
-    nats.subscribe('perf', {queue: 'test'}, function(msg, replyTo) {
+    nats.subscribe(topic, {queue: 'test'}, function(msg, replyTo) {
         if (received++ === 0) {
             time = process.hrtime();
         }

@@ -1,6 +1,7 @@
 /* eslint no-process-env:0 no-console:0 */
 const nats = require('nats').connect();
 const iterations = parseInt(process.env.iterations);
+const topic = process.env.topic;
 let received = 0;
 let time;
 const summarize = () => {
@@ -14,7 +15,7 @@ const summarize = () => {
 };
 
 nats.on('connect', function(nc) {
-    nats.subscribe('perf', function(msg) {
+    nats.subscribe(topic, function(msg) {
         if (received++ === 0) {
             time = process.hrtime();
         } else if (received === iterations) {

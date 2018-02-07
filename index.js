@@ -3,11 +3,12 @@ console.log('please wait...');
 const fork = require('child_process').fork;
 const path = require('path');
 const nodePaths = {
-    subscribe: path.join(__dirname, 'nodes', 'subscribe.js'),
+    customRequest: path.join(__dirname, 'nodes', 'customRequest.js'),
     publish: path.join(__dirname, 'nodes', 'publish.js'),
-    request: path.join(__dirname, 'nodes', 'request.js'),
+    queueReply: path.join(__dirname, 'nodes', 'queueReply.js'),
     reply: path.join(__dirname, 'nodes', 'reply.js'),
-    queueReply: path.join(__dirname, 'nodes', 'queueReply.js')
+    request: path.join(__dirname, 'nodes', 'request.js'),
+    subscribe: path.join(__dirname, 'nodes', 'subscribe.js')
 };
 const tests = {
     pubSub: {
@@ -18,8 +19,16 @@ const tests = {
         client: nodePaths.request,
         server: nodePaths.reply
     },
+    customReqRes: {
+        client: nodePaths.customRequest,
+        server: nodePaths.reply
+    },
     reqResQueue: {
         client: nodePaths.request,
+        server: nodePaths.queueReply
+    },
+    customReqResQueue: {
+        client: nodePaths.customRequest,
         server: nodePaths.queueReply
     }
 };
@@ -33,22 +42,33 @@ const params = Object.assign({
     test: process.env.test
 });
 const {client, server} = tests[params.test];
+const topic = 'perf';
 let producersStarted = 0;
 let producers = [];
 for (var i = 0; i < params.producers; i += 1) {
-    let producer = fork(server, [], {env: {iterations: params.iterations, id: i + 1}});
+    let producer = fork(server, [], {
+        env: {
+            iterations: params.iterations,
+            topic,
+            id: i + 1
+        }
+    });
     producers.push(producer);
     producer
         .on('message', message => {
             if (message === 'ready') {
                 producersStarted++;
                 if (producersStarted === params.producers) {
-                    fork(client, [], {env: {iterations: params.iterations}})
-                        .on('message', message => {
-                            if (message === 'done') {
-                                producers.map(producer => producer.send('done'));
-                            }
-                        });
+                    fork(client, [], {
+                        env: {
+                            iterations: params.iterations,
+                            topic
+                        }
+                    }).on('message', message => {
+                        if (message === 'done') {
+                            producers.map(producer => producer.send('done'));
+                        }
+                    });
                 }
             } else if (message === 'done') {
                 if (!--producersStarted) {
