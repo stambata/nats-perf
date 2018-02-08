@@ -1,5 +1,6 @@
 /* eslint no-process-env:0, no-console:0 */
-const nats = require('nats').connect();
+const {servers} = require('./common');
+const nats = require('nats').connect({servers});
 const iterations = parseInt(process.env.iterations);
 const topic = process.env.topic;
 let received = 0;
