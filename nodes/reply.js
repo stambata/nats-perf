@@ -1,8 +1,7 @@
-/* eslint no-process-env:0 no-console:0 */
+/* eslint no-process-env:0, no-console:0 */
 const nats = require('nats').connect();
-const iterations = parseInt(process.env.iterations);
-const topic = process.env.topic;
 const replyMessage = 'done!';
+const topic = process.env.topic;
 let received = 0;
 let time;
 const summarize = () => {
@@ -12,11 +11,12 @@ const summarize = () => {
         received,
         totalTime: ms + 'ms',
         mps: (received * 1000) / ms
-    }, null, 4));
+    }, null, 4), '\n\n');
 };
 
 process.on('message', (message) => {
     if (message === 'done') {
+        summarize();
         process.send(message);
     }
 });
@@ -25,8 +25,6 @@ nats.on('connect', function(nc) {
     nats.subscribe(topic, function(msg, replyTo) {
         if (received++ === 0) {
             time = process.hrtime();
-        } else if (received === iterations) {
-            summarize();
         }
         nats.publish(replyTo, replyMessage);
     });

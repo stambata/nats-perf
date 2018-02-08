@@ -1,4 +1,4 @@
-/* eslint no-process-env:0 no-console:0 */
+/* eslint no-process-env:0, no-console:0 */
 const nats = require('nats').connect();
 const msg = JSON.stringify({x: 1, y: 2, z: 3});
 const iterations = parseInt(process.env.iterations);
@@ -12,7 +12,7 @@ const summarize = () => {
         sent,
         totalTime: ms + 'ms',
         mps: (sent * 1000) / ms
-    }, null, 4));
+    }, null, 4), '\n\n');
 };
 
 nats.on('connect', () => {

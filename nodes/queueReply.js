@@ -1,4 +1,4 @@
-/* eslint no-process-env:0 no-console:0 */
+/* eslint no-process-env:0, no-console:0 */
 const nats = require('nats').connect();
 const replyMessage = 'done!';
 const topic = process.env.topic;
@@ -11,7 +11,7 @@ const summarize = () => {
         received,
         totalTime: ms + 'ms',
         mps: (received * 1000) / ms
-    }, null, 4));
+    }, null, 4), '\n\n');
 };
 
 process.on('message', (message) => {

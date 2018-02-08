@@ -1,5 +1,4 @@
-/* eslint no-process-exit:0 no-process-env:0 */
-console.log('please wait...');
+/* eslint no-process-exit:0, no-process-env:0, no-console:0 */
 const fork = require('child_process').fork;
 const path = require('path');
 const nodePaths = {
@@ -32,46 +31,43 @@ const tests = {
         server: nodePaths.queueReply
     }
 };
-const params = Object.assign({
-    iterations: 1000,
-    producers: 1,
-    test: 'pubsub'
-}, {
-    iterations: parseInt(process.env.iterations) || undefined,
-    producers: parseInt(process.env.producers) || undefined,
-    test: process.env.test
-});
+const params = {
+    iterations: parseInt(process.env.iterations) || 1000,
+    producers: parseInt(process.env.producers) || 1,
+    test: tests[process.env.test] ? process.env.test : 'pubsub',
+    topic: process.env.topic || 'perf'
+};
+console.log('\n\ncontext', JSON.stringify(params, null, 4), '\n\nplease wait...\n\n');
 const {client, server} = tests[params.test];
-const topic = 'perf';
-let producersStarted = 0;
-let producers = [];
-for (var i = 0; i < params.producers; i += 1) {
+const {topic, producers, iterations} = params;
+const producersStarted = new Set();
+for (var i = 0; i < producers; i += 1) {
     let producer = fork(server, [], {
         env: {
-            iterations: params.iterations,
+            iterations,
             topic,
             id: i + 1
         }
     });
-    producers.push(producer);
     producer
         .on('message', message => {
             if (message === 'ready') {
-                producersStarted++;
-                if (producersStarted === params.producers) {
+                producersStarted.add(producer);
+                if (producersStarted.size === producers) {
                     fork(client, [], {
                         env: {
-                            iterations: params.iterations,
+                            iterations,
                             topic
                         }
                     }).on('message', message => {
                         if (message === 'done') {
-                            producers.map(producer => producer.send('done'));
+                            producersStarted.forEach(producer => producer.send('done'));
                         }
                     });
                 }
             } else if (message === 'done') {
-                if (!--producersStarted) {
+                producersStarted.delete(producer);
+                if (!producersStarted.size) {
                     process.exit(0);
                 }
             }
