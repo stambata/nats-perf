@@ -4,6 +4,8 @@ exports.servers = [
     'nats://127.0.0.1:6222'
 ];
 
-exports.msg = JSON.stringify({x: 1, y: 2, z: 3});
+const request = require('./request.json');
+exports.msg = JSON.stringify(request);
 
-exports.replyMessage = 'done!';
+const reply = require('./reply.json');
+exports.replyMessage = JSON.stringify(reply);
